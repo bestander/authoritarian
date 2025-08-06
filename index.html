@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Author</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fafafa;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: inherit;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .backup-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .backup-history {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #dee2e6;
+        }
+
+        .backup-history.active {
+            display: block;
+        }
+
+        .backup-history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .backup-history-header h3 {
+            color: #2c3e50;
+            font-size: 1.3em;
+            margin: 0;
+        }
+
+        .toggle-history {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .toggle-history:hover {
+            background: #5a6268;
+        }
+
+        .backup-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            background: white;
+            font-size: 0.9em;
+        }
+
+        .backup-item:hover {
+            background: #f1f3f4;
+        }
+
+        .backup-info {
+            flex-grow: 1;
+        }
+
+        .backup-date {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 3px;
+        }
+
+        .backup-details {
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+
+        .backup-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .auto-backup-status {
+            font-size: 0.9em;
+            color: #27ae60;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .auto-backup-status.warning {
+            color: #f39c12;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .book-list {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .book-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .book-item:last-child {
+            border-bottom: none;
+        }
+
+        .book-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .book-item.selected {
+            background-color: #e3f2fd;
+        }
+
+        .book-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            flex-grow: 1;
+            margin-right: 20px;
+        }
+
+        .book-title.editing {
+            background: white;
+            border: 2px solid #3498db;
+            border-radius: 4px;
+            padding: 8px;
+            outline: none;
+        }
+
+        .book-meta {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-right: 20px;
+        }
+
+        .book-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        .editor {
+            display: none;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .editor.active {
+            display: block;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .book-title-editor {
+            font-size: 2em;
+            font-weight: bold;
+            border: none;
+            background: transparent;
+            color: #2c3e50;
+            outline: none;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+            flex-grow: 1;
+            margin-right: 20px;
+        }
+
+        .book-title-editor:focus {
+            border-bottom-color: #3498db;
+        }
+
+        .chapters {
+            margin-top: 30px;
+        }
+
+        .chapter {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .chapter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .chapter-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            border: none;
+            background: transparent;
+            color: #34495e;
+            outline: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+            flex-grow: 1;
+            margin-right: 15px;
+        }
+
+        .chapter-title:focus {
+            border-bottom-color: #3498db;
+        }
+
+        .chapter-title::placeholder {
+            color: #bdc3c7;
+        }
+
+        .chapter-content {
+            width: 100%;
+            min-height: 200px;
+            border: none;
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 1.1em;
+            line-height: 1.8;
+            outline: none;
+            resize: vertical;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s ease;
+        }
+
+        .chapter-content:focus {
+            border-color: #3498db;
+        }
+
+        .chapter-content::placeholder {
+            color: #bdc3c7;
+        }
+
+        .delete-chapter {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-chapter:hover {
+            background: #c0392b;
+        }
+
+        .add-chapter {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 30px auto;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-chapter:hover {
+            background: #229954;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📚 Book Author</h1>
+    </div>
+
+    <div class="controls">
+        <button class="btn" id="newBookBtn">+ New Book</button>
+        <div class="backup-controls">
+            <button class="btn btn-success" id="exportBtn">Export Backup</button>
+            <button class="btn" id="importBtn">Import Backup</button>
+            <div class="auto-backup-status" id="autoBackupStatus">
+                <span class="status-dot"></span>
+                <span>Auto-backup active</span>
+            </div>
+            <input type="file" id="fileInput" accept=".json">
+        </div>
+    </div>
+
+    <div class="book-list" id="bookList">
+        <div class="empty-state" id="emptyState">
+            <h3>No books yet</h3>
+            <p>Click "New Book" to start writing your first book!</p>
+        </div>
+    </div>
+
+    <div class="editor" id="editor">
+        <div class="editor-header">
+            <input type="text" class="book-title-editor" id="bookTitleEditor" placeholder="Enter book title...">
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="btn btn-small" id="showHistoryBtn" style="background: #6c757d;">📝 History</button>
+                <button class="btn" id="backToListBtn">← Back to List</button>
+            </div>
+        </div>
+        
+        <div class="backup-history" id="changeHistory" style="display: none;">
+            <div class="backup-history-header">
+                <h3>📝 Change History</h3>
+                <button class="toggle-history" id="toggleHistoryBtn">Hide History</button>
+            </div>
+            <div id="changeHistoryList">
+                <!-- Change history items will be dynamically added here -->
+            </div>
+        </div>
+        
+        <div class="chapters" id="chapters">
+            <!-- Chapters will be dynamically added here -->
+        </div>
+        
+        <button class="add-chapter" id="addChapterBtn">
+            <span>+</span>
+            Add Chapter
+        </button>
+    </div>
+
+    <script>
+        class BookAuthor {
+            constructor() {
+                this.books = this.loadFromStorage();
+                this.currentBookId = null;
+                this.autoBackupInterval = null;
+                this.initializeEventListeners();
+                this.renderBookList();
+                this.startAutoBackup();
+                this.updateAutoBackupStatus();
+            }
+
+            loadFromStorage() {
+                const data = localStorage.getItem('bookAuthorData');
+                return data ? JSON.parse(data) : {};
+            }
+
+            saveToStorage() {
+                localStorage.setItem('bookAuthorData', JSON.stringify(this.books));
+                // Mark activity for auto-backup system
+                this.markActivity();
+            }
+
+            generateId() {
+                return Date.now().toString(36) + Math.random().toString(36).substr(2);
+            }
+
+            // Auto-backup functionality
+            startAutoBackup() {
+                this.lastActivityTime = Date.now();
+                this.pendingBackup = false;
+                
+                // Clear any existing interval
+                if (this.autoBackupInterval) {
+                    clearInterval(this.autoBackupInterval);
+                }
+
+                // Create backup immediately if none exists
+                this.createAutoBackup();
+
+                // Check every 10 seconds if we need to create a backup
+                this.autoBackupInterval = setInterval(() => {
+                    this.checkForIdleBackup();
+                }, 10000);
+            }
+
+            checkForIdleBackup() {
+                const now = Date.now();
+                const timeSinceLastActivity = now - this.lastActivityTime;
+                const oneMinute = 60000; // 60 seconds
+
+                // If more than 1 minute has passed since last activity and we have pending changes
+                if (timeSinceLastActivity > oneMinute && this.pendingBackup) {
+                    this.createAutoBackup();
+                    this.pendingBackup = false;
+                    this.updateAutoBackupStatus();
+                }
+            }
+
+            markActivity() {
+                this.lastActivityTime = Date.now();
+                this.pendingBackup = true;
+            }
+
+            createAutoBackup() {
+                if (!this.currentBookId || !this.books[this.currentBookId]) return;
+
+                const book = this.books[this.currentBookId];
+                if (!book) return;
+
+                // Initialize change history if it doesn't exist
+                if (!book.changeHistory) {
+                    book.changeHistory = [];
+                }
+
+                const now = Date.now();
+                
+                // Create backup entry for this specific book
+                const backup = {
+                    id: this.generateId(),
+                    timestamp: now,
+                    data: JSON.parse(JSON.stringify({
+                        title: book.title,
+                        chapters: book.chapters
+                    })), // Deep copy of book content only
+                    type: 'auto'
+                };
+
+                book.changeHistory.push(backup);
+
+                // Keep only last 20 changes per book
+                if (book.changeHistory.length > 20) {
+                    book.changeHistory.splice(0, book.changeHistory.length - 20);
+                }
+
+                // Save the updated book data
+                localStorage.setItem('bookAuthorData', JSON.stringify(this.books));
+            }
+
+            loadBackupHistory() {
+                // No longer needed - keeping for compatibility
+                return [];
+            }
+
+            saveBackupHistory(backups) {
+                // No longer needed - keeping for compatibility
+            }
+
+            updateAutoBackupStatus() {
+                const statusElement = document.getElementById('autoBackupStatus');
+                
+                if (!this.currentBookId) {
+                    statusElement.innerHTML = '<span class="status-dot"></span><span>Auto-backup active</span>';
+                    statusElement.className = 'auto-backup-status';
+                    return;
+                }
+
+                const book = this.books[this.currentBookId];
+                if (!book || !book.changeHistory || book.changeHistory.length === 0) {
+                    statusElement.innerHTML = '<span class="status-dot"></span><span>Creating first backup...</span>';
+                    statusElement.className = 'auto-backup-status warning';
+                } else {
+                    const lastBackup = book.changeHistory[book.changeHistory.length - 1];
+                    const timeSinceLastBackup = Date.now() - lastBackup.timestamp;
+                    const minutesAgo = Math.floor(timeSinceLastBackup / (1000 * 60));
+                    
+                    if (minutesAgo === 0) {
+                        statusElement.innerHTML = '<span class="status-dot"></span><span>Last backup: Just now</span>';
+                    } else if (minutesAgo < 60) {
+                        statusElement.innerHTML = `<span class="status-dot"></span><span>Last backup: ${minutesAgo}m ago</span>`;
+                    } else {
+                        const hoursAgo = Math.floor(minutesAgo / 60);
+                        statusElement.innerHTML = `<span class="status-dot"></span><span>Last backup: ${hoursAgo}h ago</span>`;
+                    }
+                    statusElement.className = 'auto-backup-status';
+                }
+            }
+
+            restoreFromBackup(backupId) {
+                if (!this.currentBookId) return;
+
+                const book = this.books[this.currentBookId];
+                if (!book || !book.changeHistory) return;
+
+                const backup = book.changeHistory.find(b => b.id === backupId);
+                
+                if (!backup) {
+                    alert('Change history entry not found.');
+                    return;
+                }
+
+                if (confirm(`Are you sure you want to restore from ${this.formatDate(backup.timestamp)}? This will replace the current book content.`)) {
+                    // Restore the book content from backup
+                    book.title = backup.data.title;
+                    book.chapters = JSON.parse(JSON.stringify(backup.data.chapters)); // Deep copy
+                    book.lastEdited = Date.now();
+                    
+                    this.saveToStorage();
+                    
+                    // Refresh the editor
+                    document.getElementById('bookTitleEditor').value = book.title;
+                    this.renderChapters(book.chapters);
+                    this.renderChangeHistory();
+                    
+                    alert('Successfully restored from change history!');
+                }
+            }
+
+            deleteBackup(backupId) {
+                if (!this.currentBookId) return;
+
+                const book = this.books[this.currentBookId];
+                if (!book || !book.changeHistory) return;
+
+                if (confirm('Are you sure you want to delete this change history entry?')) {
+                    book.changeHistory = book.changeHistory.filter(b => b.id !== backupId);
+                    this.saveToStorage();
+                    this.renderChangeHistory();
+                }
+            }
+
+            toggleChangeHistory() {
+                const historyElement = document.getElementById('changeHistory');
+                const toggleBtn = document.getElementById('toggleHistoryBtn');
+                
+                if (historyElement.style.display === 'none') {
+                    historyElement.style.display = 'block';
+                    toggleBtn.textContent = 'Hide History';
+                    this.renderChangeHistory();
+                } else {
+                    historyElement.style.display = 'none';
+                    toggleBtn.textContent = 'Show History';
+                }
+            }
+
+            showChangeHistory() {
+                const historyElement = document.getElementById('changeHistory');
+                const toggleBtn = document.getElementById('toggleHistoryBtn');
+                
+                historyElement.style.display = 'block';
+                toggleBtn.textContent = 'Hide History';
+                this.renderChangeHistory();
+                
+                // Scroll to the history section
+                historyElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            renderChangeHistory() {
+                if (!this.currentBookId) return;
+
+                const book = this.books[this.currentBookId];
+                const changeHistoryList = document.getElementById('changeHistoryList');
+
+                if (!book || !book.changeHistory || book.changeHistory.length === 0) {
+                    changeHistoryList.innerHTML = `
+                        <div class="empty-state">
+                            <p>No changes recorded yet. Changes will appear here after 1 minute of inactivity.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Sort by timestamp (newest first)
+                const sortedHistory = [...book.changeHistory].sort((a, b) => b.timestamp - a.timestamp);
+
+                changeHistoryList.innerHTML = sortedHistory.map(backup => `
+                    <div class="backup-item">
+                        <div class="backup-info">
+                            <div class="backup-date">${this.formatDate(backup.timestamp)}</div>
+                            <div class="backup-details">
+                                ${backup.data.chapters.length} chapter${backup.data.chapters.length !== 1 ? 's' : ''} • Auto-saved
+                            </div>
+                        </div>
+                        <div class="backup-actions">
+                            <button class="btn btn-small" onclick="app.restoreFromBackup('${backup.id}')">Restore</button>
+                            <button class="btn btn-danger btn-small" onclick="app.deleteBackup('${backup.id}')">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            initializeEventListeners() {
+                // New book button
+                document.getElementById('newBookBtn').addEventListener('click', () => {
+                    this.createNewBook();
+                });
+
+                // Back to list button
+                document.getElementById('backToListBtn').addEventListener('click', () => {
+                    this.showBookList();
+                });
+
+                // Add chapter button
+                document.getElementById('addChapterBtn').addEventListener('click', () => {
+                    this.addChapter();
+                });
+
+                // Book title editor
+                document.getElementById('bookTitleEditor').addEventListener('input', (e) => {
+                    this.updateBookTitle(e.target.value);
+                });
+
+                // Export/Import
+                document.getElementById('exportBtn').addEventListener('click', () => {
+                    this.exportBackup();
+                });
+
+                document.getElementById('importBtn').addEventListener('click', () => {
+                    document.getElementById('fileInput').click();
+                });
+
+                document.getElementById('fileInput').addEventListener('change', (e) => {
+                    this.importBackup(e.target.files[0]);
+                });
+
+                // Backup history
+                document.getElementById('toggleHistoryBtn').addEventListener('click', () => {
+                    this.toggleChangeHistory();
+                });
+
+                document.getElementById('showHistoryBtn').addEventListener('click', () => {
+                    this.showChangeHistory();
+                });
+
+                // Update backup status periodically
+                setInterval(() => {
+                    this.updateAutoBackupStatus();
+                }, 60000); // Update every minute
+            }
+
+            createNewBook() {
+                const bookId = this.generateId();
+                const newBook = {
+                    id: bookId,
+                    title: 'Untitled Book',
+                    lastEdited: Date.now(),
+                    chapters: [{
+                        id: this.generateId(),
+                        title: '',
+                        content: ''
+                    }],
+                    changeHistory: []
+                };
+
+                this.books[bookId] = newBook;
+                this.saveToStorage();
+                this.editBook(bookId);
+            }
+
+            editBook(bookId) {
+                this.currentBookId = bookId;
+                const book = this.books[bookId];
+                
+                if (!book) return;
+
+                // Update last edited
+                book.lastEdited = Date.now();
+                this.saveToStorage();
+
+                // Show editor
+                document.getElementById('bookList').style.display = 'none';
+                document.getElementById('editor').classList.add('active');
+
+                // Reset change history toggle
+                document.getElementById('changeHistory').style.display = 'none';
+                document.getElementById('toggleHistoryBtn').textContent = 'Show History';
+
+                // Populate editor
+                document.getElementById('bookTitleEditor').value = book.title;
+                this.renderChapters(book.chapters);
+                this.updateAutoBackupStatus();
+            }
+
+            showBookList() {
+                this.currentBookId = null;
+                document.getElementById('editor').classList.remove('active');
+                document.getElementById('bookList').style.display = 'block';
+                this.renderBookList();
+            }
+
+            deleteBook(bookId) {
+                if (confirm('Are you sure you want to delete this book?')) {
+                    delete this.books[bookId];
+                    this.saveToStorage();
+                    this.renderBookList();
+                }
+            }
+
+            updateBookTitle(newTitle) {
+                if (!this.currentBookId) return;
+                
+                const book = this.books[this.currentBookId];
+                if (book) {
+                    book.title = newTitle || 'Untitled Book';
+                    book.lastEdited = Date.now();
+                    this.saveToStorage();
+                }
+            }
+
+            addChapter() {
+                if (!this.currentBookId) return;
+
+                const book = this.books[this.currentBookId];
+                if (!book) return;
+
+                const newChapter = {
+                    id: this.generateId(),
+                    title: '',
+                    content: ''
+                };
+
+                book.chapters.push(newChapter);
+                book.lastEdited = Date.now();
+                this.saveToStorage();
+                this.renderChapters(book.chapters);
+            }
+
+            deleteChapter(chapterId) {
+                if (!this.currentBookId) return;
+
+                const book = this.books[this.currentBookId];
+                if (!book || book.chapters.length <= 1) return;
+
+                if (confirm('Are you sure you want to delete this chapter?')) {
+                    book.chapters = book.chapters.filter(c => c.id !== chapterId);
+                    book.lastEdited = Date.now();
+                    this.saveToStorage();
+                    this.renderChapters(book.chapters);
+                }
+            }
+
+            updateChapter(chapterId, field, value) {
+                if (!this.currentBookId) return;
+
+                const book = this.books[this.currentBookId];
+                if (!book) return;
+
+                const chapter = book.chapters.find(c => c.id === chapterId);
+                if (chapter) {
+                    chapter[field] = value;
+                    book.lastEdited = Date.now();
+                    this.saveToStorage();
+                }
+            }
+
+            renderBookList() {
+                const bookList = document.getElementById('bookList');
+                const emptyState = document.getElementById('emptyState');
+
+                const books = Object.values(this.books);
+
+                if (books.length === 0) {
+                    emptyState.style.display = 'block';
+                    return;
+                }
+
+                emptyState.style.display = 'none';
+
+                // Sort books by last edited (most recent first)
+                const sortedBooks = books.sort((a, b) => b.lastEdited - a.lastEdited);
+
+                bookList.innerHTML = sortedBooks.map(book => `
+                    <div class="book-item" data-book-id="${book.id}">
+                        <span class="book-title" data-book-id="${book.id}">${this.escapeHtml(book.title)}</span>
+                        <span class="book-meta">${this.formatDate(book.lastEdited)}</span>
+                        <div class="book-actions">
+                            <button class="btn btn-small" onclick="app.editBook('${book.id}')">Edit</button>
+                            <button class="btn btn-danger btn-small" onclick="app.deleteBook('${book.id}')">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Add inline editing for titles
+                bookList.querySelectorAll('.book-title').forEach(titleElement => {
+                    titleElement.addEventListener('dblclick', (e) => {
+                        this.makeInlineEditable(e.target);
+                    });
+                });
+            }
+
+            makeInlineEditable(element) {
+                const bookId = element.dataset.bookId;
+                const currentText = element.textContent;
+                
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = currentText;
+                input.className = 'book-title editing';
+                
+                element.parentNode.replaceChild(input, element);
+                input.focus();
+                input.select();
+
+                const saveEdit = () => {
+                    const newTitle = input.value.trim() || 'Untitled Book';
+                    const book = this.books[bookId];
+                    if (book) {
+                        book.title = newTitle;
+                        book.lastEdited = Date.now();
+                        this.saveToStorage();
+                    }
+                    this.renderBookList();
+                };
+
+                input.addEventListener('blur', saveEdit);
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        saveEdit();
+                    }
+                });
+            }
+
+            renderChapters(chapters) {
+                const chaptersContainer = document.getElementById('chapters');
+                
+                chaptersContainer.innerHTML = chapters.map(chapter => `
+                    <div class="chapter" data-chapter-id="${chapter.id}">
+                        <div class="chapter-header">
+                            <input type="text" 
+                                   class="chapter-title" 
+                                   placeholder="Chapter title..." 
+                                   value="${this.escapeHtml(chapter.title)}"
+                                   onblur="app.updateChapter('${chapter.id}', 'title', this.value)">
+                            <button class="delete-chapter" 
+                                    onclick="app.deleteChapter('${chapter.id}')"
+                                    ${chapters.length <= 1 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                                ×
+                            </button>
+                        </div>
+                        <textarea class="chapter-content" 
+                                  placeholder="Write your chapter content here..."
+                                  onblur="app.updateChapter('${chapter.id}', 'content', this.value)">${this.escapeHtml(chapter.content)}</textarea>
+                    </div>
+                `).join('');
+            }
+
+            exportBackup() {
+                const dataStr = JSON.stringify(this.books, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `book-author-backup-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+            }
+
+            importBackup(file) {
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        if (imported.books && Array.isArray(imported.books)) {
+                            if (confirm('This will replace all your current books. Are you sure?')) {
+                                this.books = imported;
+                                this.saveToStorage();
+                                this.renderBookList();
+                                alert('Backup imported successfully!');
+                            }
+                        } else {
+                            alert('Invalid backup file format.');
+                        }
+                    } catch (error) {
+                        alert('Error reading backup file.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            formatDate(timestamp) {
+                return new Date(timestamp).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+
+        // Initialize the app
+        const app = new BookAuthor();
+    </script>
+</body>
+</html>
