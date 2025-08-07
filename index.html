@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Author</title>
+    <title>Authoritarian</title>
     <style>
         * {
             margin: 0;
@@ -12,71 +12,86 @@
         }
 
         body {
-            font-family: 'Georgia', 'Times New Roman', serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
             line-height: 1.6;
-            color: #333;
+            color: #292929;
             background-color: #fafafa;
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
+            font-size: 16px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 20px;
+            margin-bottom: 48px;
+            border-bottom: 1px solid #e6e6e6;
+            padding-bottom: 32px;
         }
 
         .header h1 {
-            font-size: 2.5em;
-            color: #2c3e50;
-            margin-bottom: 10px;
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            letter-spacing: -0.03em;
         }
 
         .controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             gap: 20px;
         }
 
         .btn {
-            background: #3498db;
+            background: #1a8917;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
+            padding: 8px 16px;
+            border-radius: 99em;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
+            font-weight: 500;
             font-family: inherit;
-            transition: background-color 0.3s ease;
+            transition: all 0.15s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 32px;
         }
 
         .btn:hover {
-            background: #2980b9;
+            background: #156f13;
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
         }
 
         .btn-danger {
-            background: #e74c3c;
+            background: #c94a37;
+            color: white;
         }
 
         .btn-danger:hover {
-            background: #c0392b;
+            background: #b8433a;
         }
 
         .btn-success {
-            background: #27ae60;
+            background: #1a8917;
         }
 
         .btn-success:hover {
-            background: #229954;
+            background: #156f13;
         }
 
         .backup-controls {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
         }
 
@@ -85,11 +100,12 @@
         }
 
         .backup-history {
-            background: #f8f9fa;
+            background: #ffffff;
             border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-            border: 1px solid #dee2e6;
+            padding: 24px;
+            margin-top: 24px;
+            border: 1px solid #e6e6e6;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .backup-history.active {
@@ -100,46 +116,50 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f2f2f2;
         }
 
         .backup-history-header h3 {
-            color: #2c3e50;
-            font-size: 1.3em;
+            color: #1a1a1a;
+            font-size: 1.25rem;
+            font-weight: 600;
             margin: 0;
         }
 
         .toggle-history {
-            background: #6c757d;
+            background: #6b6b6b;
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
+            padding: 6px 12px;
+            border-radius: 99em;
             cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.15s ease;
         }
 
         .toggle-history:hover {
-            background: #5a6268;
+            background: #5a5a5a;
         }
 
         .backup-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
+            padding: 16px;
+            border: 1px solid #f2f2f2;
+            border-radius: 6px;
             margin-bottom: 8px;
-            background: white;
-            font-size: 0.9em;
+            background: #ffffff;
+            font-size: 14px;
+            transition: all 0.15s ease;
         }
 
         .backup-item:hover {
-            background: #f1f3f4;
+            border-color: #e6e6e6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .backup-info {
@@ -147,55 +167,58 @@
         }
 
         .backup-date {
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 3px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+            font-size: 14px;
         }
 
         .backup-details {
-            font-size: 0.85em;
-            color: #6c757d;
+            font-size: 13px;
+            color: #6b6b6b;
         }
 
         .backup-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .auto-backup-status {
-            font-size: 0.9em;
-            color: #27ae60;
+            font-size: 13px;
+            color: #1a8917;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            font-weight: 500;
         }
 
         .auto-backup-status.warning {
-            color: #f39c12;
+            color: #f59e0b;
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: currentColor;
         }
 
         .book-list {
-            background: white;
+            background: #ffffff;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             overflow: hidden;
+            border: 1px solid #e6e6e6;
         }
 
         .book-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
-            border-bottom: 1px solid #eee;
+            padding: 24px;
+            border-bottom: 1px solid #f2f2f2;
             cursor: pointer;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.15s ease;
         }
 
         .book-item:last-child {
@@ -203,52 +226,58 @@
         }
 
         .book-item:hover {
-            background-color: #f8f9fa;
+            background-color: #fafafa;
         }
 
         .book-item.selected {
-            background-color: #e3f2fd;
+            background-color: #f0f9ff;
         }
 
         .book-title {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #2c3e50;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1a1a1a;
             flex-grow: 1;
-            margin-right: 20px;
+            margin-right: 24px;
+            line-height: 1.4;
         }
 
         .book-title.editing {
-            background: white;
-            border: 2px solid #3498db;
+            background: #ffffff;
+            border: 2px solid #1a8917;
             border-radius: 4px;
-            padding: 8px;
+            padding: 8px 12px;
             outline: none;
+            font-size: 1.125rem;
+            font-weight: 600;
         }
 
         .book-meta {
-            font-size: 0.9em;
-            color: #7f8c8d;
-            margin-right: 20px;
+            font-size: 13px;
+            color: #6b6b6b;
+            margin-right: 16px;
+            font-weight: 500;
         }
 
         .book-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-small {
             padding: 6px 12px;
-            font-size: 14px;
+            font-size: 13px;
+            min-height: 28px;
         }
 
         .editor {
             display: none;
-            background: white;
+            background: #ffffff;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 30px;
-            margin-top: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 32px;
+            margin-top: 32px;
+            border: 1px solid #e6e6e6;
         }
 
         .editor.active {
@@ -259,152 +288,195 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #eee;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f2f2f2;
         }
 
         .book-title-editor {
-            font-size: 2em;
-            font-weight: bold;
+            font-size: 2rem;
+            font-weight: 700;
             border: none;
             background: transparent;
-            color: #2c3e50;
+            color: #1a1a1a;
             outline: none;
             border-bottom: 2px solid transparent;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.15s ease;
             font-family: inherit;
             flex-grow: 1;
-            margin-right: 20px;
+            margin-right: 24px;
+            line-height: 1.3;
+            letter-spacing: -0.02em;
         }
 
         .book-title-editor:focus {
-            border-bottom-color: #3498db;
+            border-bottom-color: #1a8917;
+        }
+
+        .book-title-editor::placeholder {
+            color: #9ca3af;
         }
 
         .chapters {
-            margin-top: 30px;
+            margin-top: 32px;
         }
 
         .chapter {
-            background: #f8f9fa;
-            border-radius: 6px;
-            padding: 25px;
-            margin-bottom: 25px;
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
             position: relative;
+            border: 1px solid #f2f2f2;
         }
 
         .chapter-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
 
         .chapter-title {
-            font-size: 1.4em;
-            font-weight: bold;
+            font-size: 1.25rem;
+            font-weight: 600;
             border: none;
             background: transparent;
-            color: #34495e;
+            color: #1a1a1a;
             outline: none;
             border-bottom: 1px solid transparent;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.15s ease;
             font-family: inherit;
             flex-grow: 1;
-            margin-right: 15px;
+            margin-right: 16px;
+            line-height: 1.4;
         }
 
         .chapter-title:focus {
-            border-bottom-color: #3498db;
+            border-bottom-color: #1a8917;
         }
 
         .chapter-title::placeholder {
-            color: #bdc3c7;
+            color: #9ca3af;
         }
 
         .chapter-content {
             width: 100%;
             min-height: 200px;
             border: none;
-            background: white;
+            background: #ffffff;
             padding: 20px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-family: inherit;
-            font-size: 1.1em;
-            line-height: 1.8;
+            font-size: 1rem;
+            line-height: 1.7;
             outline: none;
             resize: vertical;
-            border: 1px solid #ddd;
-            transition: border-color 0.3s ease;
+            border: 1px solid #e6e6e6;
+            transition: all 0.15s ease;
+            color: #292929;
         }
 
         .chapter-content:focus {
-            border-color: #3498db;
+            border-color: #1a8917;
+            box-shadow: 0 0 0 3px rgba(26, 137, 23, 0.1);
         }
 
         .chapter-content::placeholder {
-            color: #bdc3c7;
+            color: #9ca3af;
         }
 
         .delete-chapter {
-            background: #e74c3c;
+            background: #c94a37;
             color: white;
             border: none;
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s ease;
         }
 
         .delete-chapter:hover {
-            background: #c0392b;
+            background: #b8433a;
+            transform: scale(1.05);
+        }
+
+        .delete-chapter:active {
+            transform: scale(1);
         }
 
         .add-chapter {
-            background: #27ae60;
+            background: #1a8917;
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 6px;
+            padding: 12px 24px;
+            border-radius: 99em;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
+            font-weight: 500;
             font-family: inherit;
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin: 30px auto;
-            transition: background-color 0.3s ease;
+            gap: 8px;
+            margin: 32px auto;
+            transition: all 0.15s ease;
         }
 
         .add-chapter:hover {
-            background: #229954;
+            background: #156f13;
+            transform: translateY(-1px);
+        }
+
+        .add-chapter:active {
+            transform: translateY(0);
         }
 
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: #7f8c8d;
+            padding: 64px 32px;
+            color: #6b6b6b;
         }
 
         .empty-state h3 {
-            font-size: 1.5em;
-            margin-bottom: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            line-height: 1.5;
         }
 
         .hidden {
             display: none !important;
         }
+
+        /* Medium-style focus states */
+        *:focus {
+            outline: none;
+        }
+
+        /* Improve button accessibility */
+        .btn:focus-visible,
+        .toggle-history:focus-visible,
+        .delete-chapter:focus-visible,
+        .add-chapter:focus-visible {
+            outline: 2px solid #1a8917;
+            outline-offset: 2px;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>📚 Book Author</h1>
+        <h1>Author space</h1>
     </div>
 
     <div class="controls">

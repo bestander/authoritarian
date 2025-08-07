@@ -153,9 +153,9 @@ test.describe('Book Management', () => {
     await testUtils.click('#newBookBtn');
     await testUtils.type('#bookTitleEditor', '');
     
-    // Should default to "Untitled Book"
+    // Should keep empty title as entered
     const book = await testUtils.getCurrentBook();
-    expect(book.title).toBe('Untitled Book');
+    expect(book.title).toBe('');
   });
 
   test('should display book metadata correctly', async () => {

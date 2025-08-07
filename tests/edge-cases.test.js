@@ -64,9 +64,9 @@ test.describe('Stress Tests & Edge Cases', () => {
     await testUtils.click('#newBookBtn');
     await testUtils.type('#bookTitleEditor', '');
     
-    // Should default to "Untitled Book"
+    // Should keep empty title as entered
     const book = await testUtils.getCurrentBook();
-    expect(book.title).toBe('Untitled Book');
+    expect(book.title).toBe('');
     
     // Empty chapter content should be handled
     await testUtils.type('.chapter-content', '');

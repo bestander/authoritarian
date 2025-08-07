@@ -310,7 +310,7 @@ class BookAuthor {
         const bookId = this.generateId();
         const newBook = {
             id: bookId,
-            title: 'Untitled Book',
+            title: '',
             lastEdited: Date.now(),
             chapters: [{
                 id: this.generateId(),
@@ -369,7 +369,7 @@ class BookAuthor {
         
         const book = this.books[this.currentBookId];
         if (book) {
-            book.title = newTitle || 'Untitled Book';
+            book.title = newTitle; // Keep the actual title as entered, including empty string
             book.lastEdited = Date.now();
             this.saveToStorage();
         }

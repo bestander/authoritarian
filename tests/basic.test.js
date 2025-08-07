@@ -31,7 +31,7 @@ test.describe('Basic Functionality', () => {
     
     await testUtils.expectHidden('#bookList');
     await testUtils.expectVisible('#editor');
-    await testUtils.expectValue('#bookTitleEditor', 'Untitled Book');
+    await testUtils.expectValue('#bookTitleEditor', '');
     await testUtils.expectCount('.chapter', 1);
     
     const book = await testUtils.getCurrentBook();
