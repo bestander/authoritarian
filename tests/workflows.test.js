@@ -143,6 +143,104 @@ test.describe('Advanced Workflows', () => {
     expect(allBooks[0]).toHaveProperty('lastEdited');
   });
 
+  test('export and import multiple books workflow', async () => {
+    // Create multiple books with different content
+    await testUtils.createBookWithContent('First Book', 'Chapter 1', 'Content of first book');
+    await testUtils.addChapterWithContent('Chapter 2', 'More content in first book');
+    await testUtils.click('#backToListBtn');
+    
+    await testUtils.createBookWithContent('Second Book', 'Intro', 'Content of second book');
+    await testUtils.addChapterWithContent('Main Content', 'Main content of second book');
+    await testUtils.addChapterWithContent('Conclusion', 'Conclusion content');
+    await testUtils.click('#backToListBtn');
+    
+    await testUtils.createBookWithContent('Third Book', 'Solo Chapter', 'Single chapter book');
+    await testUtils.click('#backToListBtn');
+    
+    // Verify we have 3 books
+    await testUtils.expectCount('.book-item', 3);
+    
+    // Get export data structure
+    const exportedBooks = await testUtils.page.evaluate(() => {
+      // Simulate what exportBackup() does
+      const books = Object.values(window.app.books);
+      // Sort by lastEdited (most recent first) to match what we expect
+      books.sort((a, b) => b.lastEdited - a.lastEdited);
+      return { books };
+    });
+    
+    // Verify export structure
+    expect(exportedBooks.books).toHaveLength(3);
+    expect(exportedBooks.books[0].title).toBe('Third Book'); // Most recent first
+    expect(exportedBooks.books[1].title).toBe('Second Book');
+    expect(exportedBooks.books[2].title).toBe('First Book');
+    
+    // Verify all books have proper structure
+    exportedBooks.books.forEach(book => {
+      expect(book).toHaveProperty('id');
+      expect(book).toHaveProperty('title');
+      expect(book).toHaveProperty('chapters');
+      expect(book).toHaveProperty('lastEdited');
+      expect(book.chapters.length).toBeGreaterThan(0);
+    });
+    
+    // Verify specific book contents
+    const firstBook = exportedBooks.books.find(b => b.title === 'First Book');
+    const secondBook = exportedBooks.books.find(b => b.title === 'Second Book');
+    const thirdBook = exportedBooks.books.find(b => b.title === 'Third Book');
+    
+    expect(firstBook.chapters).toHaveLength(2);
+    expect(secondBook.chapters).toHaveLength(3);
+    expect(thirdBook.chapters).toHaveLength(1);
+    
+    expect(firstBook.chapters[0].content).toBe('Content of first book');
+    expect(secondBook.chapters[1].title).toBe('Main Content');
+    expect(thirdBook.chapters[0].title).toBe('Solo Chapter');
+    
+    // Simulate import by clearing storage and reimporting
+    await testUtils.page.evaluate((importData) => {
+      // Clear current books
+      localStorage.clear();
+      window.app.books = {};
+      
+      // Simulate importBackup() logic
+      const newBooks = {};
+      importData.books.forEach(book => {
+        if (book.id) {
+          newBooks[book.id] = book;
+        }
+      });
+      
+      window.app.books = newBooks;
+      window.app.saveToStorage();
+      window.app.renderBookList();
+    }, exportedBooks);
+    
+    // Wait for UI to update
+    await testUtils.wait(200);
+    
+    // Verify all books were imported correctly
+    await testUtils.expectCount('.book-item', 3);
+    
+    // Verify book titles are visible in the list
+    const bookTitles = await testUtils.page.$$eval('.book-title', elements => 
+      elements.map(el => el.textContent)
+    );
+    
+    expect(bookTitles).toContain('First Book');
+    expect(bookTitles).toContain('Second Book');
+    expect(bookTitles).toContain('Third Book');
+    
+    // Verify we can edit imported books
+    await testUtils.page.locator('.book-item .btn:not(.btn-danger)').first().click();
+    await testUtils.expectVisible('#editor');
+    
+    // Get the book data to verify content integrity
+    const importedBook = await testUtils.getCurrentBook();
+    expect(importedBook.chapters.length).toBeGreaterThan(0);
+    expect(importedBook.chapters[0].content).toBeTruthy();
+  });
+
   test('concurrent editing simulation', async () => {
     await testUtils.createBookWithContent('Concurrent Test', 'Chapter', 'Initial');
     

@@ -13,24 +13,12 @@ class BookAuthor {
         const data = localStorage.getItem('bookAuthorData');
         if (!data) return {};
         
-        const parsed = JSON.parse(data);
-        
-        // Check if we have old format {books: [...]} and migrate to new format
-        if (parsed.books && Array.isArray(parsed.books)) {
-            const newFormat = {};
-            parsed.books.forEach(book => {
-                if (book.id) {
-                    newFormat[book.id] = book;
-                }
-            });
-            
-            // Save the migrated data immediately
-            localStorage.setItem('bookAuthorData', JSON.stringify(newFormat));
-            return newFormat;
+        try {
+            return JSON.parse(data);
+        } catch (error) {
+            console.warn('Failed to parse stored data, returning empty object');
+            return {};
         }
-        
-        // Already in new format or empty
-        return parsed;
     }
 
     saveToStorage() {
