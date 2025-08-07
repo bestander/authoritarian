@@ -430,16 +430,27 @@ class BookAuthor {
         );
 
         if (books.length === 0) {
-            emptyState.style.display = 'block';
+            // Remove any existing book items
+            const bookItems = bookList.querySelectorAll('.book-item');
+            bookItems.forEach(item => item.remove());
+            
+            // Show the empty state that already exists in HTML
+            if (emptyState) {
+                emptyState.style.display = 'block';
+            }
             return;
         }
 
-        emptyState.style.display = 'none';
+        // Hide empty state when we have books
+        if (emptyState) {
+            emptyState.style.display = 'none';
+        }
 
         // Sort books by last edited (most recent first)
         const sortedBooks = books.sort((a, b) => b.lastEdited - a.lastEdited);
 
-        bookList.innerHTML = sortedBooks.map(book => `
+        // Generate book items HTML
+        const bookItemsHTML = sortedBooks.map(book => `
             <div class="book-item" data-book-id="${book.id}">
                 <span class="book-title" data-book-id="${book.id}">${this.escapeHtml(book.title || 'Untitled Book')}</span>
                 <span class="book-meta">${this.formatDate(book.lastEdited)}</span>
@@ -449,6 +460,19 @@ class BookAuthor {
                 </div>
             </div>
         `).join('');
+
+        // Remove existing book items first
+        const existingBookItems = bookList.querySelectorAll('.book-item');
+        existingBookItems.forEach(item => item.remove());
+
+        // Create a temporary container and add book items to it, then append to bookList
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = bookItemsHTML;
+        
+        // Append each book item directly to bookList
+        while (tempDiv.firstChild) {
+            bookList.appendChild(tempDiv.firstChild);
+        }
 
         // Add inline editing for titles
         bookList.querySelectorAll('.book-title').forEach(titleElement => {

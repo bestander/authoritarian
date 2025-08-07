@@ -97,12 +97,15 @@ test.describe('Chapter Management', () => {
   test('should preserve chapter order during editing', async () => {
     await testUtils.click('#newBookBtn');
     
-    // Add multiple chapters
-    await testUtils.addChapterWithContent('Chapter 1', 'Content 1');
+    // Fill the first chapter that gets created automatically
+    await testUtils.type('.chapter-title', 'Chapter 1');
+    await testUtils.type('.chapter-content', 'Content 1');
+    
+    // Add additional chapters
     await testUtils.addChapterWithContent('Chapter 2', 'Content 2');
     await testUtils.addChapterWithContent('Chapter 3', 'Content 3');
     
-    // Edit middle chapter
+    // Edit middle chapter (second chapter)
     const secondChapterTitle = '.chapter:nth-child(2) .chapter-title';
     const secondChapterContent = '.chapter:nth-child(2) .chapter-content';
     

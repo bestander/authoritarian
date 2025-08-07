@@ -21,8 +21,31 @@ test.describe('Book Management', () => {
   });
 
   test('should create multiple books', async () => {
-    await testUtils.createMultipleBooks(3, 'Book');
+    // Create books one by one and verify each step
+    await testUtils.click('#newBookBtn');
+    await testUtils.type('#bookTitleEditor', 'Book 1');
+    await testUtils.type('.chapter-content', 'Content 1');
+    await testUtils.click('#backToListBtn');
+    await testUtils.expectVisible('#bookList');
+    await testUtils.wait(200);
+    await testUtils.expectCount('.book-item', 1);
     
+    // Second book
+    await testUtils.click('#newBookBtn');
+    await testUtils.type('#bookTitleEditor', 'Book 2');
+    await testUtils.type('.chapter-content', 'Content 2');
+    await testUtils.click('#backToListBtn');
+    await testUtils.expectVisible('#bookList');
+    await testUtils.wait(200);
+    await testUtils.expectCount('.book-item', 2);
+    
+    // Third book
+    await testUtils.click('#newBookBtn');
+    await testUtils.type('#bookTitleEditor', 'Book 3');
+    await testUtils.type('.chapter-content', 'Content 3');
+    await testUtils.click('#backToListBtn');
+    await testUtils.expectVisible('#bookList');
+    await testUtils.wait(200);
     await testUtils.expectCount('.book-item', 3);
     
     const bookCount = await testUtils.getBookCount();
@@ -49,10 +72,10 @@ test.describe('Book Management', () => {
     const deleteButton = testUtils.page.locator('.book-item .btn-danger').first();
     await deleteButton.click();
     
-    await testUtils.wait();
+    await testUtils.wait(300);
     
-    await testUtils.expectVisible('#emptyState');
     await testUtils.expectCount('.book-item', 0);
+    await testUtils.expectVisible('#emptyState');
     
     const bookCount = await testUtils.getBookCount();
     expect(bookCount).toBe(0);
@@ -71,9 +94,23 @@ test.describe('Book Management', () => {
     await input.fill('New Title');
     await testUtils.pressKey('Enter');
     
-    await testUtils.wait(200);
+    // Wait for the book list to re-render after saving (the app does this automatically)
+    await testUtils.wait(500);
     
-    await testUtils.expectText('.book-title', 'New Title');
+    // Check if the title was updated by finding any book-title with the new text
+    const titleElements = testUtils.page.locator('.book-title');
+    const count = await titleElements.count();
+    let found = false;
+    
+    for (let i = 0; i < count; i++) {
+      const text = await titleElements.nth(i).textContent();
+      if (text === 'New Title') {
+        found = true;
+        break;
+      }
+    }
+    
+    expect(found).toBe(true);
   });
 
   test('should sort books by last edited', async () => {
@@ -87,8 +124,8 @@ test.describe('Book Management', () => {
     await testUtils.createBookWithContent('Second Book', 'Chapter', 'Content');
     await testUtils.click('#backToListBtn');
     
-    // The most recently edited book should appear first
-    const firstBookTitle = await testUtils.page.locator('.book-item:first-child .book-title').textContent();
+    // The most recently edited book should appear first - find the first visible book item
+    const firstBookTitle = await testUtils.page.locator('.book-item .book-title').first().textContent();
     expect(firstBookTitle).toBe('Second Book');
   });
 

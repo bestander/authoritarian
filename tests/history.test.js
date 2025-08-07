@@ -108,12 +108,17 @@ test.describe('Change History & Auto-backup', () => {
     await testUtils.type('.chapter-content', 'Version 3');
     await testUtils.triggerAutoBackup();
     
-    // Restore to version 2
+    // History is sorted newest first, so:
+    // Index 0 = Version 3 (newest)
+    // Index 1 = Version 2
+    // Index 2 = Version 1 (oldest)
+    
+    // Restore to version 2 (index 1)
     await testUtils.restoreFromHistory(1);
     await testUtils.expectValue('.chapter-content', 'Version 2');
     
-    // Restore to version 1
-    await testUtils.restoreFromHistory(0);
+    // Restore to version 1 (index 2)
+    await testUtils.restoreFromHistory(2);
     await testUtils.expectValue('.chapter-content', 'Version 1');
   });
 

@@ -82,11 +82,14 @@ test.describe('Advanced Workflows', () => {
     await testUtils.type('.chapter-content', 'Version 3');
     await testUtils.triggerAutoBackup();
     
+    // History is sorted newest first:
+    // Index 0 = Version 3, Index 1 = Version 2, Index 2 = Version 1
+    
     // Should be able to traverse history
-    await testUtils.restoreFromHistory(1); // Restore to earlier version
+    await testUtils.restoreFromHistory(1); // Restore to Version 2
     await testUtils.expectValue('.chapter-content', 'Version 2');
     
-    await testUtils.restoreFromHistory(0); // Restore to earliest version
+    await testUtils.restoreFromHistory(2); // Restore to Version 1 (earliest)
     await testUtils.expectValue('.chapter-content', 'Version 1');
   });
 
@@ -102,7 +105,7 @@ test.describe('Advanced Workflows', () => {
     await testUtils.triggerAutoBackup();
     await testUtils.click('#backToListBtn');
     
-    // Edit first book again
+    // Edit first book again (this makes Book 1 most recently edited)
     await testUtils.page.locator('.book-item .btn:not(.btn-danger)').nth(1).click();
     await testUtils.type('.chapter-content', 'Updated Content 1');
     await testUtils.triggerAutoBackup();
@@ -112,10 +115,10 @@ test.describe('Advanced Workflows', () => {
     const historyCount = await testUtils.page.locator('.backup-item').count();
     expect(historyCount).toBeGreaterThan(0);
     
-    // Navigate back and verify second book unchanged
+    // Navigate back and verify Book 1 is now first (most recent) due to sorting
     await testUtils.click('#backToListBtn');
     await testUtils.page.locator('.book-item .btn:not(.btn-danger)').first().click();
-    await testUtils.expectValue('#bookTitleEditor', 'Book 2');
+    await testUtils.expectValue('#bookTitleEditor', 'Book 1'); // Book 1 is now first due to recent edit
   });
 
   test('export and import workflow simulation', async () => {

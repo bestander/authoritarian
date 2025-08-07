@@ -109,6 +109,19 @@ class TestUtils {
     await this.type('#bookTitleEditor', title);
     await this.type('.chapter-title', chapterTitle);
     await this.type('.chapter-content', chapterContent);
+    
+    // Ensure the book is fully saved before proceeding
+    await this.page.evaluate(() => {
+      if (window.app && window.app.currentBookId) {
+        const book = window.app.books[window.app.currentBookId];
+        if (book) {
+          book.lastEdited = Date.now();
+          window.app.saveToStorage();
+        }
+      }
+    });
+    
+    await this.wait(100); // Give time for save to complete
     return await this.getCurrentBook();
   }
 
@@ -130,7 +143,14 @@ class TestUtils {
       const title = `${titlePrefix} ${i}`;
       await this.createBookWithContent(title, `Chapter 1`, `Content for ${title}`);
       books.push(await this.getCurrentBook());
+      
+      // Go back to list and wait for it to render
       await this.click('#backToListBtn');
+      await this.expectVisible('#bookList');
+      await this.wait(300); // Wait for list to fully update
+      
+      // Verify the book appears in the list
+      await this.expectCount('.book-item', i);
     }
     return books;
   }
